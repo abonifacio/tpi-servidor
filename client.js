@@ -1,39 +1,43 @@
-const dgram = require('dgram');
-const client = dgram.createSocket('udp4');
-const fs = require('fs');
+const mockSender = require('./mock-sender');
+const os = require('os');
+const http = require('http');
 const conf = require('./conf');
 
-const HOST = conf.host;
-const PORT = conf.port;
-const BYTE_RATE = conf.byte_rate;
-const BPS = conf.bps;
-
-
-function abrirArchivo(){
-	const readStream = fs.createReadStream('tmp/queen.wav',{ highWaterMark: BYTE_RATE });
-	
-	const INTERVAL	= BYTE_RATE / BPS * 1000;
-
-	readStream.on('data',function(data){
-		client.send(data,0,data.byteLength,PORT,HOST,function(err,bytes){
-		    if (err) throw err;
-		    console.log('UDP message sent to ' + HOST +':'+ PORT);
-		    readStream.pause();
-		    setTimeout(function(){
-		    	readStream.resume();
-		    },INTERVAL);
-		});
-	});
-	readStream.on('end',function(){
-		abrirArchivo();
-	});
+function getIp(){
+    var interfaces = os.networkInterfaces();
+    for (var k in interfaces) {
+        for (var k2 in interfaces[k]) {
+            var address = interfaces[k][k2];
+            if (address.family === 'IPv4' && !address.internal) {
+                return address.address;
+            }
+        }
+    }   
 }
 
-client.on('listening',function(){
+const args = process.argv;
 
-	client.setBroadcast(true);
-	abrirArchivo();
-});
+if(args.length>2){
+    const disp = {
+        nombre:args[2],
+        ip:getIp()
+    }
 
-client.bind();
+    const req = http.request({
+        host:conf.host,
+        method:'POST',
+        path:'/dispositivos',
+        headers:{
+            'Content-Type':'application/json'
+        }
+    },function(res){
+        res.on('data',function(body){
+            const puerto = parseInt(body);
+            console.log(puerto);
+            mockSender(puerto);
+        });
+    });
+    req.write(JSON.stringify(disp));
+    req.end();
 
+}

@@ -1,7 +1,7 @@
 const config = {
-	host : '0.0.0.0',
+	host : '192.168.0.37',
 	port : 8080,
-	bps: 264600,
+	kbps: 1411,
 	byte_rate:63*1024
 }
 
