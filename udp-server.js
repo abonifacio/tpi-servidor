@@ -1,7 +1,7 @@
 const dgram = require('dgram');
 
 function createServer(PORT,onData){
-	const server = dgram.createSocket('udp6');
+	const server = dgram.createSocket('udp4');
 	server.on('error', (err) => {
 	  server.close();
 	});
