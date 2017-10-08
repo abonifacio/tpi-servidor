@@ -5,11 +5,10 @@
 
 1. node
 2. npm
-3. aplay 
 
 ```sh
 
-$ sudo apt install -y nodejs npm aplay
+$ sudo apt install -y nodejs npm
 
 ```
 
@@ -33,6 +32,6 @@ $ npm start # en la carpeta del proyecto
 
 ```sh
 
-$ node client.js # con el servidor corriendo
+$ node client.js <Nombre del dispositivo> # con el servidor corriendo
 
 ```

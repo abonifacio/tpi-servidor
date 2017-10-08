@@ -58,9 +58,15 @@ function Dispositivos(){
     }
 
     this.subscribe = function(PORT,IP){
+        const old = getByIp(IP);
         const disp = getByPort(PORT);
         if(!disp) throw "No hay dispositivo en ese puerto";
-        disp.subscribers.push(IP);
+        const index = disp.subscribers.indexOf(IP);
+        if(index>-1){
+            disp.subscribers.splice(index,1);
+        }else{
+            disp.subscribers.push(IP);
+        }
     }
 }
 
