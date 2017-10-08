@@ -1,4 +1,4 @@
-const mockSender = require('./mock-sender');
+const mockSender = require('./mock-mic');
 const os = require('os');
 const http = require('http');
 const conf = require('./conf');
@@ -40,4 +40,6 @@ if(args.length>2){
     req.write(JSON.stringify(disp));
     req.end();
 
+}else{
+    mockSender(8080);
 }

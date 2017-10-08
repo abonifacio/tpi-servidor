@@ -27,7 +27,7 @@ function abrirArchivo(PORT){
 		});
 	});
 	readStream.on('end',function(){
-		abrirArchivo();
+		abrirArchivo(PORT);
 	});
 }
 
