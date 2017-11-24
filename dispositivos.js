@@ -41,6 +41,7 @@ function Dispositivos(){
         if(!disp) throw "El dispositivo es nulo";
         if(!disp.ip) throw "El dispositivo no tiene IP";
         if(!disp.nombre) throw "El dispositivo no tiene nombre";
+        if(!disp.sample_rate) throw "El dispositivo no specifica frecuencia de muestreo";
         if(getByIp(disp.ip)) throw "La ip ya se encuentra registrada";
         disp.puerto = getNextPort();
         disp.subscribers = [];
@@ -67,6 +68,19 @@ function Dispositivos(){
         }else{
             disp.subscribers.push(IP);
         }
+    }
+
+    this.remove = function(port){
+        var i;
+        var index = undefined;
+        for(i=0;i<LIST.length;i++){
+            if(LIST[i].puerto==port){
+                index = i;
+                break;
+            }
+        }
+        if(index==undefined) throw "El puerto no está registrado";
+        LIST.splice(index,1);
     }
 }
 

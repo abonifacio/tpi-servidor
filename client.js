@@ -20,7 +20,8 @@ const args = process.argv;
 if(args.length>2){
     const disp = {
         nombre:args[2],
-        ip:getIp()
+        ip:getIp(),
+        sample_rate:8000
     }
 
     const req = http.request({

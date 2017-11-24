@@ -1,0 +1,156 @@
+swagger: "2.0"
+info:
+  description: "Servicios que expone el servidor para el consumo mediante HTTP a través de clientes Android y CIAA."
+  version: "1.0.0"
+  title: "Micrófono Remoto"
+  contact:
+    email: "augustobonifacio95@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+- name: "dispositivo-ciaa"
+  description: "Servicios a consumir por la CIAA"
+- name: "dispositivo-cliente"
+  description: "Servicios a consumir por los dispositivos de escucha"
+schemes:
+- "http"
+paths:
+  /dispositivos:
+    post:
+      tags:
+      - "dispositivo-ciaa"
+      summary: "Registra un micrófono"
+      operationId: "addMic"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Datos del micrófono a registrar"
+        required: true
+        schema:
+          $ref: "#/definitions/Dispositivo"
+      responses:
+        200:
+          description: "Devuele el puerto que el servidor abre para recibir la información del micrófono"
+          schema:
+            $ref: "#/definitions/Puerto"
+        500:
+          description: "Error. En el Header 'Error-Message' se encuentra la causa"
+    put:
+      tags:
+      - "dispositivo-cliente"
+      summary: "Solicita escuchar a un determinado micrófono"
+      operationId: "listenMic"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Solicitud de escucha"
+        required: true
+        schema:
+          $ref: "#/definitions/Solicitud"
+      responses:
+        200:
+          description: "Devuele la frecuencia de muestreo del micrófono que transmite"
+          schema:
+            $ref: "#/definitions/SampleRate"
+        500:
+          description: "Error. En el Header 'Error-Message' se encuentra la causa"
+    get:
+      tags:
+      - "dispositivo-cliente"
+      summary: "Lista los micrófonos que se encuentran transmitiendo"
+      operationId: "getMics"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Devuele la frecuencia de muestreo del micrófono que transmite"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Dispositivo"
+        500:
+          description: "Error. En el Header 'Error-Message' se encuentra la causa"
+  /dispositivo/{puerto}:
+    delete:
+      tags:
+      - "dispositivo-ciaa"
+      summary: "Da de baja un micrófono"
+      operationId: "deleteMic"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "puerto"
+        in: "path"
+        description: "Puerto al cuál transmite el micrófono"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Se dió de baja el dispositivo"
+        500:
+          description: "Error. En el Header 'Error-Message' se encuentra la causa"
+definitions:
+  Puerto:
+    type: "number"
+    format: "unit8"
+    example: 8081
+  SampleRate:
+    type: "number"
+    format: "unit8"
+    example: 4400
+  Dispositivo:
+    type: "object"
+    required:
+      - "nombre"
+      - "ip"
+      - "sample_rate"
+    properties:
+      ip:
+        type: "string"
+        example: "192.168.0.10"
+        description: "Ip del dispostivo"
+      nombre:
+        type: "string"
+        example: "CIAA"
+        description: "Nombre del dispositivo"
+      subscribers:
+        type: "array"
+        description: "Lista de clientes escuchando a este dispositivo"
+        items:
+          type: "string"
+          description: "Ip de quien escucha"
+          example: "192.168.0.200"
+      sample_rate:
+        type: "number"
+        format: "uint8"
+        example: 44000
+        description: "Frecuencia de muestreo del audio transmitido"
+      puerto:
+        type: "number"
+        format: "uint8"
+        description: "Puerto del servidor al cuál transmite el dispositivo"
+  Solicitud:
+    type: "object"
+    required:
+      - "puerto"
+      - "ip"
+    properties:
+      ip:
+        type: "string"
+        example: "192.168.0.10"
+        description: "Ip del dispostivo solicitante"
+      puerto:
+        type: "number"
+        format: "uint8"
+        description: "Puerto al cuál transmite el micrófono"
+        example: 8081

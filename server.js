@@ -3,8 +3,8 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
-const spawn = require('child_process').spawn;
 const app = express();
+
 
 /**
  * Clases
@@ -24,6 +24,7 @@ app.use(bodyParser.json());
 app.use(Logger);
 
 function onPacket(data,PORT){
+	console.log('UDP => ',data);
 	try{
 		const disp = dispositivos.get(PORT);
 		disp.subscribers.forEach(function(IP) {
@@ -40,6 +41,8 @@ function copyAndSend(data,ip,port){
 	console.log('Se envio a ',ip);
 }
 
+app.use(express.static(__dirname + '/swagger'));
+
 app.get(URI, function (req, res) {
 	res.send(dispositivos.get());
 });
@@ -52,7 +55,18 @@ app.post(URI, function (req, res) {
 
 app.put(URI,function(req,res){
 	dispositivos.subscribe(req.body.puerto,req.body.ip);
+	const d = dispositivos.get(req.body.puerto);
+	res.send(String(d.sample_rate));
+});
+
+app.delete(URI+'/:puerto',function(req,res){
+	const puerto = req.params.puerto;
+	dispositivos.remove(puerto);
 	res.status(200).send(null);
+});
+
+app.get('/',function(req,res){
+	res.sendFile(__dirname+'/swagger/index.html')
 });
 
 app.use(ErrorHandler);
@@ -69,5 +83,5 @@ function ErrorHandler(err,req,res,next){
 }
 
 app.listen(80,function(){
-	console.log('Server corriendo');
+	console.log('Server corriendo http://localhost/');
 });
