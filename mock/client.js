@@ -1,7 +1,7 @@
-const mockSender = require('./mock-mic');
+const mockSender = require('./mock-sender');
 const os = require('os');
 const http = require('http');
-const conf = require('./conf');
+const conf = require('../conf');
 
 function getIp(){
     var interfaces = os.networkInterfaces();
@@ -15,13 +15,27 @@ function getIp(){
     }   
 }
 
+function getMac(){
+    var interfaces = os.networkInterfaces();
+    for (var k in interfaces) {
+        for (var k2 in interfaces[k]) {
+            var address = interfaces[k][k2];
+            if (address.family === 'IPv4' && !address.internal) {
+                return address.mac;
+            }
+        }
+    }   
+}
+
 const args = process.argv;
 
 if(args.length>2){
     const disp = {
         nombre:args[2],
         ip:getIp(),
-        sample_rate:8000
+        mac:getMac()+args[2],
+        sampleRate:8000,
+        sampleSize:8,
     }
 
     const req = http.request({
@@ -42,5 +56,5 @@ if(args.length>2){
     req.end();
 
 }else{
-    mockSender(8080);
+    mockSender(8081);
 }

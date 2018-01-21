@@ -16,7 +16,7 @@ tags:
 schemes:
 - "http"
 paths:
-  /dispositivos:
+  /dispositivo:
     post:
       tags:
       - "dispositivo-ciaa"
@@ -43,7 +43,7 @@ paths:
     put:
       tags:
       - "dispositivo-cliente"
-      summary: "Solicita escuchar a un determinado micrófono"
+      summary: "Solicita escuchar o dejar de escuchar a un determinado micrófono"
       operationId: "listenMic"
       consumes:
       - "application/json"
@@ -58,9 +58,7 @@ paths:
           $ref: "#/definitions/Solicitud"
       responses:
         200:
-          description: "Devuele la frecuencia de muestreo del micrófono que transmite"
-          schema:
-            $ref: "#/definitions/SampleRate"
+          description: "Si la solicitud resulta OK"
         500:
           description: "Error. En el Header 'Error-Message' se encuentra la causa"
     get:
@@ -79,7 +77,7 @@ paths:
               $ref: "#/definitions/Dispositivo"
         500:
           description: "Error. En el Header 'Error-Message' se encuentra la causa"
-  /dispositivo/{puerto}:
+  /dispositivo/{mac}:
     delete:
       tags:
       - "dispositivo-ciaa"
@@ -88,12 +86,11 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "puerto"
+      - name: "mac"
         in: "path"
-        description: "Puerto al cuál transmite el micrófono"
+        description: "MAC del micrófono"
         required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: "Se dió de baja el dispositivo"
@@ -104,20 +101,22 @@ definitions:
     type: "number"
     format: "unit8"
     example: 8081
-  SampleRate:
-    type: "number"
-    format: "unit8"
-    example: 4400
   Dispositivo:
     type: "object"
     required:
       - "nombre"
       - "ip"
-      - "sample_rate"
+      - "mac"
+      - "sampleRate"
+      - "sampleSize"
     properties:
       ip:
         type: "string"
         example: "192.168.0.10"
+        description: "Ip del dispostivo"
+      mac:
+        type: "string"
+        example: "ad:af:ac:65:b3:c9"
         description: "Ip del dispostivo"
       nombre:
         type: "string"
@@ -130,11 +129,20 @@ definitions:
           type: "string"
           description: "Ip de quien escucha"
           example: "192.168.0.200"
-      sample_rate:
+      sampleRate:
         type: "number"
         format: "uint8"
         example: 44000
         description: "Frecuencia de muestreo del audio transmitido"
+      sampleSize:
+        type: "number"
+        format: "uint8"
+        example: 8
+        description: "Tamaño de la muestra del audio transmitido: (8 | 16) bits"
+      stereo:
+        type: "boolean"
+        example: true
+        description: "Si transmite en stereo (por defecto false)"
       puerto:
         type: "number"
         format: "uint8"
@@ -142,15 +150,14 @@ definitions:
   Solicitud:
     type: "object"
     required:
-      - "puerto"
+      - "mac"
       - "ip"
     properties:
       ip:
         type: "string"
         example: "192.168.0.10"
         description: "Ip del dispostivo solicitante"
-      puerto:
-        type: "number"
-        format: "uint8"
-        description: "Puerto al cuál transmite el micrófono"
-        example: 8081
+      mac:
+        type: "string"
+        description: "MAC del micrófono"
+        example: "ab:ac:ad:19:29:39"

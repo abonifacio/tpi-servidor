@@ -1,0 +1,21 @@
+{
+  "name": "tpi-servidor",
+  "description": "",
+  "main": "server.js",
+  "authors": [
+    "augusto bonifacio"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/abonifacio/tpi-servidor",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-material-design": "^0.5.10",
+    "socket.io-client": "^2.0.4"
+  }
+}

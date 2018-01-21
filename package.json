@@ -18,6 +18,8 @@
   "homepage": "https://github.com/abonifacio/tpi-servidor#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "^4.16.1"
+    "express": "^4.16.1",
+    "mongoose": "^4.13.6",
+    "socket.io": "^2.0.4"
   }
 }

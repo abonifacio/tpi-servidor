@@ -1,4 +1,4 @@
-const listener = require('./udp-listener')(onData);
+const listener = require('../udp-listener')(onData);
 
 
 function onData(data){

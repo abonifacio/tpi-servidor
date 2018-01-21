@@ -5,6 +5,7 @@
 
 1. node
 2. npm
+3. Instalar y correr el servicio de MongoDB  (https://www.digitalocean.com/community/tutorials/como-instalar-mongodb-en-ubuntu-16-04-es)
 
 ```sh
 
@@ -32,7 +33,7 @@ $ npm start # en la carpeta del proyecto
 
 ```sh
 
-$ node client.js <Nombre del dispositivo> # con el servidor corriendo
+$ node mock/client.js <Nombre del dispositivo> # con el servidor corriendo
 
 ```
 
@@ -86,7 +87,7 @@ Si solamente interesa probar la llegada de paquetes UDP
 
 ```
 
-$ node test.js
+$ node mock/receive-udp.js
 
 ```
 

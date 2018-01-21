@@ -1,7 +1,7 @@
 const dgram = require('dgram');
 const client = dgram.createSocket('udp4');
 const fs = require('fs');
-const conf = require('./conf');
+const conf = require('../conf');
 
 const HOST = conf.host;
 const BYTE_RATE = conf.byte_rate;
@@ -9,7 +9,7 @@ const KBPS = conf.kbps;
 
 
 function abrirArchivo(PORT){
-	const readStream = fs.createReadStream('tmp/queen.wav',{ highWaterMark: BYTE_RATE });
+	const readStream = fs.createReadStream('tmp/record-8bit-mono-8k2.wav',{ highWaterMark: BYTE_RATE });
 	
 
 	const INTERVAL	= BYTE_RATE / (KBPS * 1024 / 8) * 1000;

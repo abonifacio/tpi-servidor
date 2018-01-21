@@ -27,10 +27,10 @@ function Dispositivos(){
         return undefined;
     }
 
-    function getByIp(IP){
+    function getByMac(MAC){
         var i;
         for(i=0;i<LIST.length;i++){
-            if(LIST[i].ip==IP){
+            if(LIST[i].mac==MAC){
                 return LIST[i];
             }
         }
@@ -39,29 +39,35 @@ function Dispositivos(){
 
     this.add = function(disp){
         if(!disp) throw "El dispositivo es nulo";
+        if(!disp.mac) throw "El dispositivo no tiene MAC adress";
         if(!disp.ip) throw "El dispositivo no tiene IP";
         if(!disp.nombre) throw "El dispositivo no tiene nombre";
-        if(!disp.sample_rate) throw "El dispositivo no specifica frecuencia de muestreo";
-        if(getByIp(disp.ip)) throw "La ip ya se encuentra registrada";
+        if(!disp.sampleRate) throw "El dispositivo no specifica frecuencia de muestreo";
+        if(!disp.sampleSize) throw "El dispositivo no specifica tamano de muestra";
+        if(!disp.stereo) disp.stereo = false;
+        if(getByMac(disp.mac)) throw "La Mac ya se encuentra registrada";
         disp.puerto = getNextPort();
         disp.subscribers = [];
         LIST.push(disp);
-        return disp.puerto;
+        return disp;
     }
 
-    this.get = function(port){
-        if(port){
-            const tmp = getByPort(port);
-            if(!tmp) throw "No se encontro el puerto "+port;
+    this.get = function(portOrMac){
+        if(portOrMac && typeof portOrMac === 'string'){
+            const tmp = getByMac(portOrMac);
+            if(!tmp) throw "No se encontro el puerto "+portOrMac;
+            return tmp;
+        }else if(portOrMac){
+            const tmp = getByPort(portOrMac);
+            if(!tmp) throw "No se encontro la mac "+portOrMac;
             return tmp;
         }
         return LIST;
     }
 
-    this.subscribe = function(PORT,IP){
-        const old = getByIp(IP);
-        const disp = getByPort(PORT);
-        if(!disp) throw "No hay dispositivo en ese puerto";
+    this.subscribe = function(MAC,IP){
+        const disp = getByMac(MAC);
+        if(!disp) throw "No existe el dispositivo";
         const index = disp.subscribers.indexOf(IP);
         if(index>-1){
             disp.subscribers.splice(index,1);
@@ -70,11 +76,11 @@ function Dispositivos(){
         }
     }
 
-    this.remove = function(port){
+    this.remove = function(MAC){
         var i;
         var index = undefined;
         for(i=0;i<LIST.length;i++){
-            if(LIST[i].puerto==port){
+            if(LIST[i].mac==MAC){
                 index = i;
                 break;
             }
