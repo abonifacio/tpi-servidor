@@ -9,7 +9,8 @@ const KBPS = conf.kbps;
 
 
 function abrirArchivo(PORT){
-	const readStream = fs.createReadStream('tmp/record-8bit-mono-8k2.wav',{ highWaterMark: BYTE_RATE });
+	// const readStream = fs.createReadStream('../tmp/MUESTRA-PM.wav',{ highWaterMark: BYTE_RATE });
+	const readStream = fs.createReadStream('../tmp/testeo.txt',{ highWaterMark: BYTE_RATE });
 	
 
 	const INTERVAL	= BYTE_RATE / (KBPS * 1024 / 8) * 1000;

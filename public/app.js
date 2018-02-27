@@ -95,7 +95,7 @@ $(document).ready(function() {
                 <p>Frecuencia de muestreo: ${dispositivo.sampleRate}</p>
                 <p>Tamaño de muestra: ${dispositivo.sampleSize}</p>
                 <p>Canales: ${dispositivo.stereo ? 'Estereo':'Mono'}</p>
-                <button type="button" id="play-btn" class="btn btn-primary">Reproducir</button>
+                <button type="button" id="play-btn" class="btn btn-primary">Descargar</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default close-modal">Cerrar</button>

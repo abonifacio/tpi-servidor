@@ -1,9 +1,8 @@
 const mongoose = require('mongoose')
-const fs = require('fs')
 
 mongoose.connect('mongodb://localhost/tpiservidor')
 
-const NUM_PAQ = 3
+const NUM_PAQ = 30
 
 const dispositivoSchema = new mongoose.Schema({
     nombre:String,
@@ -68,11 +67,11 @@ function Storage(notifyNewRecord){
         }else if(disp.size<disp.written+bytes.length){
             // console.log(disp.size,'<<',disp.written+bytes.length)
             save(disp,function(nuevo){
-                nuevo.written += bytes.copy(disp.bytes)
+                disp.written += bytes.copy(disp.bytes)
             })
         }else{
             // console.log(`buffereados: ${bytes.length}`)
-            disp.written += bytes.copy(disp.bytes)
+            disp.written += bytes.copy(disp.bytes,disp.written)
         }
     }
     
@@ -103,8 +102,7 @@ function Storage(notifyNewRecord){
     function onFirstPaquet(bytes,dispositivo){
         dispositivo.size = NUM_PAQ * bytes.length
         dispositivo.bytes = Buffer.allocUnsafe(dispositivo.size)
-        bytes.copy(dispositivo.bytes)
-        dispositivo.written = bytes.length
+        dispositivo.written = bytes.copy(dispositivo.bytes)
     }
     
     function getAll(onData){

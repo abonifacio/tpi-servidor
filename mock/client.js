@@ -1,4 +1,5 @@
-const mockSender = require('./mock-sender');
+const mockSender = require('./mock-sender2');
+// const mockSender = require('./mock-mic');
 const os = require('os');
 const http = require('http');
 const conf = require('../conf');
@@ -34,8 +35,12 @@ if(args.length>2){
         nombre:args[2],
         ip:getIp(),
         mac:getMac()+args[2],
-        sampleRate:8000,
+        sampleRate:31000,
         sampleSize:8,
+        stereo:false
+        // sampleRate:44100,
+        // sampleSize:16,
+        // stereo:true
     }
 
     const req = http.request({

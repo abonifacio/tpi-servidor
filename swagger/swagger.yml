@@ -16,7 +16,7 @@ tags:
 schemes:
 - "http"
 paths:
-  /dispositivo:
+  /dispositivos:
     post:
       tags:
       - "dispositivo-ciaa"
@@ -77,7 +77,7 @@ paths:
               $ref: "#/definitions/Dispositivo"
         500:
           description: "Error. En el Header 'Error-Message' se encuentra la causa"
-  /dispositivo/{mac}:
+  /dispositivos/{mac}:
     delete:
       tags:
       - "dispositivo-ciaa"

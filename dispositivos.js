@@ -40,12 +40,13 @@ function Dispositivos(){
     this.add = function(disp){
         if(!disp) throw "El dispositivo es nulo";
         if(!disp.mac) throw "El dispositivo no tiene MAC adress";
+        let existente = getByMac(disp.mac);
+        if(existente) return existente;
         if(!disp.ip) throw "El dispositivo no tiene IP";
         if(!disp.nombre) throw "El dispositivo no tiene nombre";
         if(!disp.sampleRate) throw "El dispositivo no specifica frecuencia de muestreo";
         if(!disp.sampleSize) throw "El dispositivo no specifica tamano de muestra";
         if(!disp.stereo) disp.stereo = false;
-        if(getByMac(disp.mac)) throw "La Mac ya se encuentra registrada";
         disp.puerto = getNextPort();
         disp.subscribers = [];
         LIST.push(disp);
@@ -55,11 +56,11 @@ function Dispositivos(){
     this.get = function(portOrMac){
         if(portOrMac && typeof portOrMac === 'string'){
             const tmp = getByMac(portOrMac);
-            if(!tmp) throw "No se encontro el puerto "+portOrMac;
+            if(!tmp) throw "No se encontro la mac "+portOrMac;
             return tmp;
         }else if(portOrMac){
             const tmp = getByPort(portOrMac);
-            if(!tmp) throw "No se encontro la mac "+portOrMac;
+            if(!tmp) throw "No se encontro el puerto "+portOrMac;
             return tmp;
         }
         return LIST;

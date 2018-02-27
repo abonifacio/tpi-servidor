@@ -8,7 +8,8 @@ const SAMPLE_RATE = 8000;
 function start(PORT){
 
 	// const rec = spawn('arecord',['-f','cd']); // linux
-	const rec = spawn('fmedia',['--record','--rate='+SAMPLE_RATE,'--channels=mono','--format=int8','-o','@stdout.wav']); //windows
+	// const rec = spawn('fmedia',['--record','--rate=44100','--channels=stereo','--format=int16','-o','@stdout.wav']); //windows
+	const rec = spawn('fmedia',['--record','-o','@stdout.wav']); //windows
 	var count = 0
 	rec.stdout.on('data',function(data){
 		client.send(data,0,data.byteLength,PORT,HOST,function(err,bytes){
