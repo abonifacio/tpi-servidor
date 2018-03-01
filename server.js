@@ -23,7 +23,7 @@ const ERROR_HEADER = 'Error-Message'
 const PORT = conf.port
 
 app.use(bodyParser.json())
-// app.use(Logger)
+app.use(Logger)
 
 function onPacket(data,PORT){
 	console.log('UDP => ',data)
@@ -80,6 +80,10 @@ app.get('/audios',function(req,res){
 	storage.getAll(function(lista){
 		res.status(200).send(lista)
 	})
+})
+
+app.get('/disp',function(req,res){
+	res.status(200).send('hola')
 })
 
 app.get('/audios/:mac',function(req,res){

@@ -49,6 +49,10 @@ Registra un dispositivo al servidor. Si después se hace un GET /dispositivos se
 Recibe un request con el siguiente JSON en el cuerpo. Ip debe ser única
 
 ```
+"GET /disp HTTP/1.1\r\nHost: 10.0.137.160\r\n\r\n"
+
+
+"POST /dispositivos HTTP/1.1\r\nContent-Length: 78\r\nContent-Type: application/json\r\nHost: 10.0.137.160\r\n\r\n{\"mac\":\"ad:af:ac:65:b3:c9\",\"nombre\":\"CIAA\",\"sampleRate\":44000,\"sampleSize\": 8}"
 
 {
   "ip": "192.168.0.11",
