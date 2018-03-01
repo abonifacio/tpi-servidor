@@ -40,7 +40,7 @@ $ node mock/client.js <Nombre del dispositivo> # con el servidor corriendo
 
 # API
 
-La API está documentada en http://localhost/
+La API está documentada en http://localhost/api
 
 # POST /dispositivos 
 
