@@ -1,110 +1,62 @@
 /**
  * Librerias
  */
-const express = require('express')
-const bodyParser = require('body-parser')
-const app = express()
+const app = require('./lib/util/express-config')(__dirname)
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
 
 /**
  * Clases
  */ 
-const conf = require('./conf')
-const dispositivos = require('./dispositivos')
-const listener = require('./udp-listener')(onPacket)
-const sender = require('./udp-sender')
-const storage = require('./storage')(onNewDispositivoSaved)
-
-/**
- * Constantes
- */
-const ERROR_HEADER = 'Error-Message'
-const PORT = conf.port
-
-app.use(bodyParser.json())
-app.use(Logger)
+const log = require('./lib/util/logger')
+const udp = require('./lib/udp')(onPacket)
+const storage = require('./lib/storage')
 
 function onPacket(data,PORT){
-	console.log('UDP => ',data)
-	try{
-		const disp = dispositivos.get(PORT)
-		disp.subscribers.forEach(function(IP) {
-			copyAndSend(data,IP,PORT)
-		})
-		storage.buffer(data,disp.mac)
-	}catch(err){
-		console.error(err)
+	const disp = storage.get(PORT)
+	if(disp){
+		udp.broadcast(data,disp)
+		storage.buffer(data,disp)
+	}else{
+		log.warning(`Llego un paquete al puerto ${PORT} y no hay dispositivo registrado en ese puerto`)
 	}
 }
 
-function onNewDispositivoSaved(dispositivo){
-	io.sockets.emit('nuevo',dispositivo)
-}
 
-function copyAndSend(data,ip,port){
-	const buffer = Buffer.from(data)
-	sender.send(data,port,ip)
-	console.log('Se envio a ',ip)
-}
-
-app.use('/api',express.static(__dirname + '/swagger'))
-app.use('/bower_components',express.static(__dirname + '/bower_components'))
-app.use('/',express.static(__dirname + '/public'))
-
-app.get('/dispositivos', function (req, res) {
-	res.send(dispositivos.get())
+app.get('/dispositivos', function (req, res,next) {
+	storage.listDispositivos(req.query.all).then((data)=>{
+		res.send(data)
+	}).catch(next)
 })
 
-app.post('/dispositivos', function (req, res) {
-	const disp = dispositivos.add(req.body)
-	storage.init(disp)
-	listener.listen(disp.puerto)
-	res.send(String(disp.puerto))
+app.post('/dispositivos', function (req,res,next) {
+	log.debug('Llego: ',req.body)
+	storage.add(req.body).then((data)=>{
+		log.debug('Devolviendo puerto... ',data.puerto)
+		if(data.created){
+			io.sockets.emit('nuevo',data)
+		}
+		udp.listen(data.puerto)
+		res.send(String(data.puerto))
+	}).catch(next)
 })
 
-app.put('/dispositivos',function(req,res){
-	dispositivos.subscribe(req.body.mac,req.body.ip)
-	const d = dispositivos.get(req.body.puerto)
-	res.send(String(d.sample_rate))
+app.put('/dispositivos',function(req,res,next){
+	res.send(String(storage.subscribe(req.body.mac,req.body.ip)))
+})
+
+app.get('/dispositivos/:mac',function(req,res,next){
+	const mac = req.params.mac
+	storage.withFiles(mac).then((data)=>{
+		res.send(data)
+	}).catch(next)
 })
 
 app.delete('/dispositivos/:mac',function(req,res){
-	const mac = req.params.mac
-	dispositivos.remove(mac)
-	storage.clear(mac)
+	storage.remove(req.params.mac)
 	res.status(200).send(null)
 })
 
-app.get('/audios',function(req,res){
-	storage.getAll(function(lista){
-		res.status(200).send(lista)
-	})
-})
-
-app.get('/disp',function(req,res){
-	res.status(200).send('hola')
-})
-
-app.get('/audios/:mac',function(req,res){
-	const mac = req.params.mac
-	storage.pipeAudioStream(res,mac)
-})
-
-
-app.use(ErrorHandler)
-
-function Logger(req,res,next){
-	console.log('Request: ',req.method,req.url)
-	next()
-}
-function ErrorHandler(err,req,res,next){
-	console.log('Interceptando error: ',err)
-	res.set(ERROR_HEADER,err)
-	res.status(500)
-	res.send(null)
-}
-
 http.listen(80,function(){
-	console.log('Server corriendo http://localhost/')
+	log.info('Server corriendo http://localhost/')
 })
