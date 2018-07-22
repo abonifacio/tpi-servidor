@@ -16,7 +16,11 @@ function onPacket(data,PORT){
 	const disp = storage.get(PORT)
 	if(disp){
 		udp.broadcast(data,disp)
-		storage.buffer(data,disp)
+		let newFile = storage.buffer(data,disp)
+		if(newFile) {
+			io.sockets.emit('file',Object.assign({mac:disp.mac},newFile))
+			log.debug('Archivo creado: ',newFile)
+		}
 	}else{
 		log.warning(`Llego un paquete al puerto ${PORT} y no hay dispositivo registrado en ese puerto`)
 	}
@@ -33,9 +37,7 @@ app.post('/dispositivos', function (req,res,next) {
 	log.debug('Llego: ',req.body)
 	storage.add(req.body).then((data)=>{
 		log.debug('Devolviendo puerto... ',data.puerto)
-		if(data.created){
-			io.sockets.emit('nuevo',data)
-		}
+		io.sockets.emit(data.created ? 'nuevo' : 'refresh',data)
 		udp.listen(data.puerto)
 		res.send(String(data.puerto))
 	}).catch(next)
