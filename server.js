@@ -4,6 +4,7 @@
 const app = require('./lib/util/express-config')(__dirname)
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const conf = require('./conf')
 
 /**
  * Clases
@@ -61,4 +62,7 @@ app.delete('/dispositivos/:mac',function(req,res){
 
 http.listen(80,function(){
 	log.info('Server corriendo http://localhost/')
+	if(conf.mockRegister){
+		require('./mock/register')()	
+	}
 })
